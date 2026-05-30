@@ -1,0 +1,105 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Filament {
+  id          String   @id @default(uuid())
+  name        String
+  spoolWeight Float    // grams
+  spoolPrice  Float    // BRL
+  costPerGram Float    // calculated field, stored for performance
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("filaments")
+}
+
+model Packaging {
+  id           String   @id @default(uuid())
+  name         String
+  quantity     Int      // units per package
+  packagePrice Float    // BRL
+  costPerUnit  Float    // calculated field, stored for performance
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("packaging")
+}
+
+// Singleton — always one row, identified by the fixed id "singleton"
+model EnergyConfig {
+  id                 String   @id @default("singleton")
+  kwhPrice           Float    @default(0.85)
+  printerConsumption Float    @default(150) // Watts
+  updatedAt          DateTime @updatedAt
+
+  @@map("energy_config")
+}
+
+// Singleton — always one row, identified by the fixed id "singleton"
+model PrinterConfig {
+  id              String   @id @default("singleton")
+  wearCostPerHour Float    @default(1.50)
+  updatedAt       DateTime @updatedAt
+
+  @@map("printer_config")
+}
+
+// Singleton — always one row, identified by the fixed id "singleton"
+model LaborConfig {
+  id         String   @id @default("singleton")
+  hourlyRate Float    @default(30.00)
+  updatedAt  DateTime @updatedAt
+
+  @@map("labor_config")
+}
+
+// Singleton — always one row, identified by the fixed id "singleton"
+model ProfitConfig {
+  id                  String   @id @default("singleton")
+  defaultProfitMargin Float    @default(35)
+  updatedAt           DateTime @updatedAt
+
+  @@map("profit_config")
+}
+
+model Quote {
+  id        String   @id @default(uuid())
+  name      String
+  createdAt DateTime @default(now())
+
+  // PrintJob snapshot (flat columns for queryability)
+  filamentId            String
+  filamentName          String   // snapshot of name at save time
+  materialUsed          Float
+  printTimeHours        Int
+  printTimeMinutes      Int
+  paintTimeHours        Int      @default(0)
+  paintTimeMinutes      Int      @default(0)
+  assemblyTimeHours     Int      @default(0)
+  assemblyTimeMinutes   Int      @default(0)
+  finishingTimeHours    Int      @default(0)
+  finishingTimeMinutes  Int      @default(0)
+  includePostProcessing Boolean  @default(true)
+  packagingId           String?
+  packagingName         String?  // snapshot of name at save time
+  includePackaging      Boolean  @default(false)
+  useDefaultMargin      Boolean  @default(true)
+  profitMargin          Float
+  // CalculationResult snapshot
+  filamentCost  Float
+  energyCost    Float
+  printerWear   Float
+  laborCost     Float
+  packagingCost Float
+  totalCost     Float
+  profit        Float
+  finalPrice    Float
+
+  @@map("quotes")
+}
