@@ -1,8 +1,22 @@
-import { IsInt, IsNotEmpty, IsNumber, IsOptional, IsString, Max, Min, ValidateNested } from 'class-validator';
+import {
+  IsInt,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Max,
+  Min,
+  ValidateNested,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class FilamentImportDto {
+  @IsOptional()
+  @IsString()
+  @ApiPropertyOptional({ example: 'uuid', description: 'Filament id (ignored on import)' })
+  id?: string;
+
   @IsString()
   @IsNotEmpty()
   @ApiProperty({ example: 'PLA Branco', description: 'Filament name' })
@@ -15,11 +29,31 @@ export class FilamentImportDto {
 
   @IsNumber()
   @Min(0)
-  @ApiProperty({ example: 89.90, description: 'Spool purchase price in BRL' })
+  @ApiProperty({ example: 89.9, description: 'Spool purchase price in BRL' })
   spoolPrice: number;
+
+  @IsOptional()
+  @IsNumber()
+  @ApiPropertyOptional({ example: 0.0899, description: 'Cost per gram (recalculated server-side, ignored on import)' })
+  costPerGram?: number;
+
+  @IsOptional()
+  @IsString()
+  @ApiPropertyOptional({ description: 'Created at timestamp (ignored on import)' })
+  createdAt?: string;
+
+  @IsOptional()
+  @IsString()
+  @ApiPropertyOptional({ description: 'Updated at timestamp (ignored on import)' })
+  updatedAt?: string;
 }
 
 export class PackagingImportDto {
+  @IsOptional()
+  @IsString()
+  @ApiPropertyOptional({ example: 'uuid', description: 'Packaging id (ignored on import)' })
+  id?: string;
+
   @IsString()
   @IsNotEmpty()
   @ApiProperty({ example: 'Caixa de Papelão Padrão', description: 'Packaging name' })
@@ -32,11 +66,31 @@ export class PackagingImportDto {
 
   @IsNumber()
   @Min(0)
-  @ApiProperty({ example: 35.00, description: 'Package purchase price in BRL' })
+  @ApiProperty({ example: 35.0, description: 'Package purchase price in BRL' })
   packagePrice: number;
+
+  @IsOptional()
+  @IsNumber()
+  @ApiPropertyOptional({ example: 3.5, description: 'Cost per unit (recalculated server-side, ignored on import)' })
+  costPerUnit?: number;
+
+  @IsOptional()
+  @IsString()
+  @ApiPropertyOptional({ description: 'Created at timestamp (ignored on import)' })
+  createdAt?: string;
+
+  @IsOptional()
+  @IsString()
+  @ApiPropertyOptional({ description: 'Updated at timestamp (ignored on import)' })
+  updatedAt?: string;
 }
 
 export class EnergyImportDto {
+  @IsOptional()
+  @IsString()
+  @ApiPropertyOptional({ description: 'Singleton id (ignored on import)' })
+  id?: string;
+
   @IsNumber()
   @Min(0)
   @ApiProperty({ example: 0.85, description: 'Price per kWh in BRL' })
@@ -46,28 +100,63 @@ export class EnergyImportDto {
   @Min(1)
   @ApiProperty({ example: 150, description: 'Printer power consumption in Watts' })
   printerConsumption: number;
+
+  @IsOptional()
+  @IsString()
+  @ApiPropertyOptional({ description: 'Updated at timestamp (ignored on import)' })
+  updatedAt?: string;
 }
 
 export class PrinterImportDto {
+  @IsOptional()
+  @IsString()
+  @ApiPropertyOptional({ description: 'Singleton id (ignored on import)' })
+  id?: string;
+
   @IsNumber()
   @Min(0)
-  @ApiProperty({ example: 1.50, description: 'Printer wear cost per hour in BRL' })
+  @ApiProperty({ example: 1.5, description: 'Printer wear cost per hour in BRL' })
   wearCostPerHour: number;
+
+  @IsOptional()
+  @IsString()
+  @ApiPropertyOptional({ description: 'Updated at timestamp (ignored on import)' })
+  updatedAt?: string;
 }
 
 export class LaborImportDto {
+  @IsOptional()
+  @IsString()
+  @ApiPropertyOptional({ description: 'Singleton id (ignored on import)' })
+  id?: string;
+
   @IsNumber()
   @Min(0)
-  @ApiProperty({ example: 30.00, description: 'Labor hourly rate in BRL' })
+  @ApiProperty({ example: 30.0, description: 'Labor hourly rate in BRL' })
   hourlyRate: number;
+
+  @IsOptional()
+  @IsString()
+  @ApiPropertyOptional({ description: 'Updated at timestamp (ignored on import)' })
+  updatedAt?: string;
 }
 
 export class ProfitImportDto {
+  @IsOptional()
+  @IsString()
+  @ApiPropertyOptional({ description: 'Singleton id (ignored on import)' })
+  id?: string;
+
   @IsNumber()
   @Min(0)
   @Max(100)
   @ApiProperty({ example: 35, description: 'Default profit margin percentage (0–100)' })
   defaultProfitMargin: number;
+
+  @IsOptional()
+  @IsString()
+  @ApiPropertyOptional({ description: 'Updated at timestamp (ignored on import)' })
+  updatedAt?: string;
 }
 
 export class ImportConfigDto {
@@ -79,7 +168,10 @@ export class ImportConfigDto {
   @IsOptional()
   @ValidateNested({ each: true })
   @Type(() => PackagingImportDto)
-  @ApiPropertyOptional({ type: [PackagingImportDto], description: 'Optional list of packaging options to import' })
+  @ApiPropertyOptional({
+    type: [PackagingImportDto],
+    description: 'Optional list of packaging options to import',
+  })
   packaging?: PackagingImportDto[];
 
   @ValidateNested()

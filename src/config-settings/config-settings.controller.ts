@@ -3,6 +3,8 @@ import {
   Controller,
   Get,
   Header,
+  HttpCode,
+  HttpStatus,
   Patch,
   Post,
   Res,
@@ -77,6 +79,7 @@ export class ConfigSettingsController {
   }
 
   @Post('restore-defaults')
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Restore configurations and data to seed defaults' })
   @ApiResponse({
     status: 200,
