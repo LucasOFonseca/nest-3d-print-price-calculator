@@ -8,6 +8,10 @@ export class TransformInterceptor implements NestInterceptor {
     return next.handle().pipe(
       map(data => {
         const response = context.switchToHttp().getResponse();
+        const contentDisposition = response.getHeader?.('content-disposition') || response.get?.('content-disposition');
+        if (response.headersSent || contentDisposition) {
+          return data;
+        }
         const status = response.statusCode || 200;
         return {
           data,
