@@ -7,6 +7,8 @@ import { PrismaModule } from './prisma/prisma.module';
 import { ConfigSettingsModule } from './config-settings/config-settings.module';
 import { FilamentsModule } from './filaments/filaments.module';
 import { PackagingModule } from './packaging/packaging.module';
+import { CalculatorModule } from './calculator/calculator.module';
+import { QuotesModule } from './quotes/quotes.module';
 
 @Module({
   imports: [
@@ -15,6 +17,8 @@ import { PackagingModule } from './packaging/packaging.module';
     ConfigSettingsModule,
     FilamentsModule,
     PackagingModule,
+    CalculatorModule,
+    QuotesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
