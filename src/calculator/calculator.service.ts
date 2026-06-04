@@ -15,13 +15,14 @@ export class CalculatorService {
     }
 
     let packagingCost = 0;
-    if (dto.includePackaging && dto.packagingId) {
-      const pkg = await this.prisma.packaging.findUnique({
-        where: { id: dto.packagingId },
+    if (dto.includePackaging && dto.packagingIds && dto.packagingIds.length > 0) {
+      const packages = await this.prisma.packaging.findMany({
+        where: { id: { in: dto.packagingIds } },
       });
-      if (pkg) {
-        packagingCost = pkg.costPerUnit;
-      }
+      packagingCost = dto.packagingIds.reduce((sum, id) => {
+        const pkg = packages.find((p) => p.id === id);
+        return sum + (pkg ? pkg.costPerUnit : 0);
+      }, 0);
     }
 
     const [energy, printer, labor, profit] = await Promise.all([

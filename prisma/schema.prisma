@@ -87,8 +87,8 @@ model Quote {
   finishingTimeHours    Int      @default(0)
   finishingTimeMinutes  Int      @default(0)
   includePostProcessing Boolean  @default(true)
-  packagingId           String?
-  packagingName         String?  // snapshot of name at save time
+  packagingIds          String[]
+  packagingNames        String[]  // snapshot of names at save time
   includePackaging      Boolean  @default(false)
   useDefaultMargin      Boolean  @default(true)
   profitMargin          Float

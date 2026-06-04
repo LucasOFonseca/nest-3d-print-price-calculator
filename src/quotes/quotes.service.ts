@@ -30,8 +30,8 @@ export class QuotesService {
         finishingTimeMinutes: quote.finishingTimeMinutes,
         useDefaultMargin: quote.useDefaultMargin,
         profitMargin: quote.profitMargin,
-        packagingId: quote.packagingId,
-        packagingName: quote.packagingName,
+        packagingIds: quote.packagingIds,
+        packagingNames: quote.packagingNames,
         includePackaging: quote.includePackaging,
       },
       result: {
@@ -72,14 +72,15 @@ export class QuotesService {
       throw new NotFoundException('Filament not found');
     }
 
-    let packagingName: string | null = null;
-    if (dto.printJob.includePackaging && dto.printJob.packagingId) {
-      const pkg = await this.prisma.packaging.findUnique({
-        where: { id: dto.printJob.packagingId },
+    let packagingNames: string[] = [];
+    if (dto.printJob.includePackaging && dto.printJob.packagingIds && dto.printJob.packagingIds.length > 0) {
+      const packages = await this.prisma.packaging.findMany({
+        where: { id: { in: dto.printJob.packagingIds } },
       });
-      if (pkg) {
-        packagingName = pkg.name;
-      }
+      packagingNames = dto.printJob.packagingIds.map(id => {
+        const pkg = packages.find(p => p.id === id);
+        return pkg ? pkg.name : 'Unknown';
+      });
     }
 
     const result = await this.calculatorService.calculate(dto.printJob);
@@ -106,8 +107,8 @@ export class QuotesService {
         finishingTimeHours: dto.printJob.finishingTimeHours,
         finishingTimeMinutes: dto.printJob.finishingTimeMinutes,
         includePostProcessing: dto.printJob.includePostProcessing,
-        packagingId: dto.printJob.packagingId ?? null,
-        packagingName,
+        packagingIds: dto.printJob.packagingIds ?? [],
+        packagingNames,
         includePackaging: dto.printJob.includePackaging,
         useDefaultMargin: dto.printJob.useDefaultMargin,
         profitMargin: appliedMargin,

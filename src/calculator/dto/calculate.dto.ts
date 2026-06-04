@@ -1,4 +1,4 @@
-import { IsUUID, IsNumber, Min, IsInt, Max, IsBoolean, IsOptional } from 'class-validator';
+import { IsUUID, IsNumber, Min, IsInt, Max, IsBoolean, IsOptional, IsArray } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CalculateDto {
@@ -70,9 +70,10 @@ export class CalculateDto {
   profitMargin: number;
 
   @IsOptional()
-  @IsUUID()
-  @ApiPropertyOptional({ example: '857bb7e2-4db1-4e45-8bc6-6c84c68b753a', description: 'UUID of the packaging' })
-  packagingId?: string;
+  @IsArray()
+  @IsUUID('all', { each: true })
+  @ApiPropertyOptional({ type: [String], example: ['857bb7e2-4db1-4e45-8bc6-6c84c68b753a'], description: 'Array of packaging UUIDs' })
+  packagingIds?: string[];
 
   @IsBoolean()
   @ApiProperty({ example: false, description: 'Whether to include packaging' })
