@@ -65,6 +65,10 @@ export class QuotesService {
   }
 
   async create(dto: CreateQuoteDto) {
+    if (!dto.printJob.filamentId || dto.printJob.materialUsed === undefined) {
+      throw new NotFoundException('filamentId and materialUsed are required when creating a quote');
+    }
+
     const filament = await this.prisma.filament.findUnique({
       where: { id: dto.printJob.filamentId },
     });
@@ -95,9 +99,9 @@ export class QuotesService {
     const quote = await this.prisma.quote.create({
       data: {
         name: dto.name,
-        filamentId: dto.printJob.filamentId,
+        filamentId: dto.printJob.filamentId!,
         filamentName: filament.name,
-        materialUsed: dto.printJob.materialUsed,
+        materialUsed: dto.printJob.materialUsed!,
         printTimeHours: dto.printJob.printTimeHours,
         printTimeMinutes: dto.printJob.printTimeMinutes,
         paintTimeHours: dto.printJob.paintTimeHours,

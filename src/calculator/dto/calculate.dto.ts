@@ -1,15 +1,43 @@
-import { IsUUID, IsNumber, Min, IsInt, Max, IsBoolean, IsOptional, IsArray } from 'class-validator';
+import { IsUUID, IsNumber, Min, IsInt, Max, IsBoolean, IsOptional, IsArray, ValidateNested } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 
-export class CalculateDto {
+export class FilamentItemDto {
   @IsUUID()
   @ApiProperty({ example: '3514de13-cfde-4277-bf39-444458514107', description: 'UUID of the filament' })
   filamentId: string;
 
   @IsNumber()
   @Min(0)
-  @ApiProperty({ example: 250, description: 'Material used in grams' })
+  @ApiProperty({ example: 250, description: 'Material used in grams for this filament' })
   materialUsed: number;
+}
+
+export class CalculateDto {
+  @IsOptional()
+  @IsUUID()
+  @ApiPropertyOptional({ example: '3514de13-cfde-4277-bf39-444458514107', description: 'UUID of the filament (single-filament mode)' })
+  filamentId?: string;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  @ApiPropertyOptional({ example: 250, description: 'Material used in grams (single-filament mode)' })
+  materialUsed?: number;
+
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => FilamentItemDto)
+  @ApiPropertyOptional({
+    type: [FilamentItemDto],
+    example: [
+      { filamentId: '3514de13-cfde-4277-bf39-444458514107', materialUsed: 100 },
+      { filamentId: 'a1b2c3d4-0000-0000-0000-000000000000', materialUsed: 50 },
+    ],
+    description: 'Array of filament specifications for multi-filament prints',
+  })
+  filaments?: FilamentItemDto[];
 
   @IsInt()
   @Min(0)
